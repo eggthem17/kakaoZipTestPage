@@ -1,48 +1,51 @@
 <!DOCTYPE html>
-
 <html lang="ko">
   <head>
     <title>주소 찾기</title>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width,height=device-height,initial-scale=1.0"
+      content="width=device-width, height=device-height, initial-scale=1.0"
     />
   </head>
   <body onload="execDaumPostcode()">
     <div
       id="layer"
-      style="display:block; position:absolute; overflow:hidden; z-index:1; -webkit-overflow-scrolling:touch; "
+      style="display:block; position:absolute; overflow:hidden; z-index:1; -webkit-overflow-scrolling:touch;"
     ></div>
     <script src="https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"></script>
     <script>
-      window.addEventListener("message", onReceivedPostMessage, false);
-
-      function onReceivedPostMessage(event) {
-        //..ex deconstruct event into action & params
-        var action = event.data.action;
-        var params = event.data.params;
-        console.log("onReceivedPostMessage " + event);
-      }
-
-      function onReceivedActivityMessageViaJavascriptInterface(json) {
-        //..ex deconstruct data into action & params
-        var data = JSON.parse(json);
-        var action = data.action;
-        var params = data.params;
-        console.log("onReceivedActivityMessageViaJavascriptInterface " + event);
-      }
-
+      // iOS 브릿지용 메시지 전송 함수
       function postMessageToiOS(postData) {
         window.webkit.messageHandlers.callBackHandler.postMessage(postData);
       }
 
-      var element_layer = document.getElementById("layer");
+      // Android 브릿지용 메시지 전송 함수
+      function postMessageToAndroid(postData) {
+        // 예시: Android 측에서 addJavascriptInterface 할 때 "AndroidBridge" 이름으로 등록하였다면
+        // Android Java 쪽에서 원하는 메서드를 구현합니다.
+        window.AndroidBridge.callBackHandler(JSON.stringify(postData));
+      }
+
+      // 환경에 따라 적절한 브릿지 함수 호출
+      function sendPostData(postData) {
+        // iOS 환경인지 확인
+        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.callBackHandler) {
+          postMessageToiOS(postData);
+        }
+        // Android 환경인지 확인 (Android에서는 보통 addJavascriptInterface를 통해 window.AndroidBridge가 주입됩니다.)
+        else if (window.AndroidBridge && typeof window.AndroidBridge.callBackHandler === 'function') {
+          postMessageToAndroid(postData);
+        } else {
+          console.warn("지원하는 브릿지가 없습니다.", postData);
+        }
+      }
+
+      // Daum Postcode 실행 함수
       function execDaumPostcode() {
         new daum.Postcode({
           oncomplete: function (data) {
             var jibunAddress = "";
-
             if (data.jibunAddress == "") {
               jibunAddress = data.autoJibunAddress;
             } else if (data.autoJibunAddress == "") {
@@ -54,31 +57,26 @@
               jibunAddress: jibunAddress,
               zonecode: data.zonecode,
             };
-            window.webkit.messageHandlers.callBackHandler.postMessage(postData);
+
+            // iOS 또는 Android에 데이터를 전달
+            sendPostData(postData);
           },
           width: "100%",
           height: "100%",
-        }).embed(element_layer);
-        element_layer.style.display = "block";
+        }).embed(document.getElementById("layer"));
+        document.getElementById("layer").style.display = "block";
         initLayerPosition();
       }
 
+      // 레이어 초기 위치 설정 함수
       function initLayerPosition() {
         var width = window.innerWidth || document.documentElement.clientWidth;
-        var height =
-          window.innerHeight || document.documentElement.clientHeight;
+        var height = window.innerHeight || document.documentElement.clientHeight;
+        var element_layer = document.getElementById("layer");
         element_layer.style.width = width + "px";
         element_layer.style.height = height + "px";
-        element_layer.style.left =
-          ((window.innerWidth || document.documentElement.clientWidth) -
-            width) /
-            2 +
-          "px";
-        element_layer.style.top =
-          ((window.innerHeight || document.documentElement.clientHeight) -
-            height) /
-            2 +
-          "px";
+        element_layer.style.left = ((width - width) / 2) + "px";  // 이 부분은 필요에 따라 조정 가능
+        element_layer.style.top = ((height - height) / 2) + "px";  // 이 부분도 필요에 따라 조정
       }
     </script>
   </body>
