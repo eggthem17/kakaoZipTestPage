@@ -1,102 +1,85 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2822
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\fnil\fcharset0 Menlo-Italic;}
-{\colortbl;\red255\green255\blue255;\red81\green156\blue233;\red30\green33\blue39;\red155\green162\blue177;
-\red214\green85\blue98;\red197\green136\blue83;\red136\green185\blue102;\red223\green180\blue104;\red72\green168\blue181;
-\red244\green0\blue95;\red152\green224\blue36;\red161\green121\blue161;}
-{\*\expandedcolortbl;;\cssrgb\c38039\c68235\c93333;\cssrgb\c15686\c17255\c20392;\cssrgb\c67059\c69804\c74902;
-\cssrgb\c87843\c42353\c45882;\cssrgb\c81961\c60392\c40000;\cssrgb\c59608\c76471\c47451;\cssrgb\c90196\c75294\c48235;\cssrgb\c33725\c71373\c76078;
-\cssrgb\c97647\c14902\c44706;\cssrgb\c65098\c88627\c18039;\cssrgb\c69412\c55686\c69412;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\deftab720
-\pard\pardeftab720\partightenfactor0
+<!DOCTYPE html>
 
-\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
-<!DOCTYPE html>\cf4 \
-\
-<\cf5 html\cf4  \cf6 lang\cf4 =\cf7 "ko"\cf4 >\
-  <\cf5 head\cf4 >\
-    <\cf5 title\cf4 >\uc0\u51452 \u49548  \u52286 \u44592 </\cf5 title\cf4 >\
-    <\cf5 meta\cf4  \cf6 charset\cf4 =\cf7 "UTF-8"\cf4  />\
-    <\cf5 meta\cf4 \
-      \cf6 name\cf4 =\cf7 "viewport"\cf4 \
-      \cf6 content\cf4 =\cf7 "width=device-width,height=device-height,initial-scale=1.0"\cf4 \
-    />\
-  </\cf5 head\cf4 >\
-  <\cf5 body\cf4  \cf6 onload\cf4 =\cf7 "execDaumPostcode()"\cf4 >\
-    <\cf5 div\cf4 \
-      \cf6 id\cf4 =\cf7 "layer"\cf4 \
-      \cf6 style\cf4 =\cf7 "display:block; position:absolute; overflow:hidden; z-index:1; -webkit-overflow-scrolling:touch; "\cf4 \
-    ></\cf5 div\cf4 >\
-    <\cf5 script\cf4  \cf6 src\cf4 =\cf7 "https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"\cf4 ></\cf5 script\cf4 >\
-    <\cf5 script\cf4 >\
-      \cf8 window\cf4 .addEventListener(\cf7 "message"\cf4 , onReceivedPostMessage, \cf9 false\cf4 );\
-\
-      \cf10 function\cf2  onReceivedPostMessage(\cf11 event\cf2 ) \cf4 \{\
-        
-\f1\i \cf12 //..ex deconstruct event into action & params
-\f0\i0 \cf4 \
-        \cf10 var\cf4  action = event.data.action;\
-        \cf10 var\cf4  params = event.data.params;\
-        \cf8 console\cf4 .log(\cf7 "onReceivedPostMessage "\cf4  + event);\
-      \}\
-\
-      \cf10 function\cf2  onReceivedActivityMessageViaJavascriptInterface(\cf11 json\cf2 ) \cf4 \{\
-        
-\f1\i \cf12 //..ex deconstruct data into action & params
-\f0\i0 \cf4 \
-        \cf10 var\cf4  data = \cf8 JSON\cf4 .parse(json);\
-        \cf10 var\cf4  action = data.action;\
-        \cf10 var\cf4  params = data.params;\
-        \cf8 console\cf4 .log(\cf7 "onReceivedActivityMessageViaJavascriptInterface "\cf4  + event);\
-      \}\
-\
-      \cf10 function\cf2  postMessageToiOS(\cf11 postData\cf2 ) \cf4 \{\
-        \cf8 window\cf4 .webkit.messageHandlers.callBackHandler.postMessage(postData);\
-      \}\
-\
-      \cf10 var\cf4  element_layer = \cf8 document\cf4 .getElementById(\cf7 "layer"\cf4 );\
-      \cf10 function\cf2  execDaumPostcode() \cf4 \{\
-        \cf10 new\cf4  daum.Postcode(\{\
-          \cf6 oncomplete\cf4 : \cf10 function\cf2  (\cf11 data\cf2 ) \cf4 \{\
-            \cf10 var\cf4  jibunAddress = \cf7 ""\cf4 ;\
-\
-            \cf10 if\cf4  (data.jibunAddress == \cf7 ""\cf4 ) \{\
-              jibunAddress = data.autoJibunAddress;\
-            \} \cf10 else\cf4  \cf10 if\cf4  (data.autoJibunAddress == \cf7 ""\cf4 ) \{\
-              jibunAddress = data.jibunAddress;\
-            \}\
-\
-            \cf10 var\cf4  postData = \{\
-              \cf6 roadAddress\cf4 : data.roadAddress,\
-              \cf6 jibunAddress\cf4 : jibunAddress,\
-              \cf6 zonecode\cf4 : data.zonecode,\
-            \};\
-            \cf8 window\cf4 .postMessageToiOS(postData);\
-          \},\
-          \cf6 width\cf4 : \cf7 "100%"\cf4 ,\
-          \cf6 height\cf4 : \cf7 "100%"\cf4 ,\
-        \}).embed(element_layer);\
-        element_layer.style.display = \cf7 "block"\cf4 ;\
-        initLayerPosition();\
-      \}\
-\
-      \cf10 function\cf2  initLayerPosition() \cf4 \{\
-        \cf10 var\cf4  width = \cf8 window\cf4 .innerWidth || \cf8 document\cf4 .documentElement.clientWidth;\
-        \cf10 var\cf4  height =\
-          \cf8 window\cf4 .innerHeight || \cf8 document\cf4 .documentElement.clientHeight;\
-        element_layer.style.width = width + \cf7 "px"\cf4 ;\
-        element_layer.style.height = height + \cf7 "px"\cf4 ;\
-        element_layer.style.left =\
-          ((\cf8 window\cf4 .innerWidth || \cf8 document\cf4 .documentElement.clientWidth) -\
-            width) /\
-            \cf6 2\cf4  +\
-          \cf7 "px"\cf4 ;\
-        element_layer.style.top =\
-          ((\cf8 window\cf4 .innerHeight || \cf8 document\cf4 .documentElement.clientHeight) -\
-            height) /\
-            \cf6 2\cf4  +\
-          \cf7 "px"\cf4 ;\
-      \}\
-    </\cf5 script\cf4 >\
-  </\cf5 body\cf4 >\
-</\cf5 html\cf4 >}
+<html lang="ko">
+  <head>
+    <title>주소 찾기</title>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,height=device-height,initial-scale=1.0"
+    />
+  </head>
+  <body onload="execDaumPostcode()">
+    <div
+      id="layer"
+      style="display:block; position:absolute; overflow:hidden; z-index:1; -webkit-overflow-scrolling:touch; "
+    ></div>
+    <script src="https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"></script>
+    <script>
+      window.addEventListener("message", onReceivedPostMessage, false);
+
+      function onReceivedPostMessage(event) {
+        //..ex deconstruct event into action & params
+        var action = event.data.action;
+        var params = event.data.params;
+        console.log("onReceivedPostMessage " + event);
+      }
+
+      function onReceivedActivityMessageViaJavascriptInterface(json) {
+        //..ex deconstruct data into action & params
+        var data = JSON.parse(json);
+        var action = data.action;
+        var params = data.params;
+        console.log("onReceivedActivityMessageViaJavascriptInterface " + event);
+      }
+
+      function postMessageToiOS(postData) {
+        window.webkit.messageHandlers.callBackHandler.postMessage(postData);
+      }
+
+      var element_layer = document.getElementById("layer");
+      function execDaumPostcode() {
+        new daum.Postcode({
+          oncomplete: function (data) {
+            var jibunAddress = "";
+
+            if (data.jibunAddress == "") {
+              jibunAddress = data.autoJibunAddress;
+            } else if (data.autoJibunAddress == "") {
+              jibunAddress = data.jibunAddress;
+            }
+
+            var postData = {
+              roadAddress: data.roadAddress,
+              jibunAddress: jibunAddress,
+              zonecode: data.zonecode,
+            };
+            window.postMessageToiOS(postData);
+          },
+          width: "100%",
+          height: "100%",
+        }).embed(element_layer);
+        element_layer.style.display = "block";
+        initLayerPosition();
+      }
+
+      function initLayerPosition() {
+        var width = window.innerWidth || document.documentElement.clientWidth;
+        var height =
+          window.innerHeight || document.documentElement.clientHeight;
+        element_layer.style.width = width + "px";
+        element_layer.style.height = height + "px";
+        element_layer.style.left =
+          ((window.innerWidth || document.documentElement.clientWidth) -
+            width) /
+            2 +
+          "px";
+        element_layer.style.top =
+          ((window.innerHeight || document.documentElement.clientHeight) -
+            height) /
+            2 +
+          "px";
+      }
+    </script>
+  </body>
+</html>
