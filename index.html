@@ -15,68 +15,43 @@
     ></div>
     <script src="https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"></script>
     <script>
-      // iOS 브릿지용 메시지 전송 함수
-      function postMessageToiOS(postData) {
-        window.webkit.messageHandlers.callBackHandler.postMessage(postData);
-      }
-
-      // Android 브릿지용 메시지 전송 함수
-      function postMessageToAndroid(postData) {
-        // 예시: Android 측에서 addJavascriptInterface 할 때 "AndroidBridge" 이름으로 등록하였다면
-        // Android Java 쪽에서 원하는 메서드를 구현합니다.
-        window.AndroidBridge.callBackHandler(JSON.stringify(postData));
-      }
-
-      // 환경에 따라 적절한 브릿지 함수 호출
-      function sendPostData(postData) {
-        // iOS 환경인지 확인
-        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.callBackHandler) {
-          postMessageToiOS(postData);
-        }
-        // Android 환경인지 확인 (Android에서는 보통 addJavascriptInterface를 통해 window.AndroidBridge가 주입됩니다.)
-        else if (window.AndroidBridge && typeof window.AndroidBridge.callBackHandler === 'function') {
-          postMessageToAndroid(postData);
-        } else {
-          console.warn("지원하는 브릿지가 없습니다.", postData);
-        }
-      }
-
-      // Daum Postcode 실행 함수
       function execDaumPostcode() {
         new daum.Postcode({
           oncomplete: function (data) {
-            var jibunAddress = "";
-            if (data.jibunAddress == "") {
-              jibunAddress = data.autoJibunAddress;
-            } else if (data.autoJibunAddress == "") {
-              jibunAddress = data.jibunAddress;
-            }
-
-            var postData = {
-              roadAddress: data.roadAddress,
-              jibunAddress: jibunAddress,
-              zonecode: data.zonecode,
+            // 반환 결과에서 필요한 값을 추출하여 새 객체 생성
+            var newPostData = {
+              "sido": data.sido,         // 예: 경기
+              "zonecode": data.zonecode,   // 예: 13529
+              "sigungu": data.sigungu,     // 예: 성남시 분당구
+              "bname": data.bname,       // 예: 백현동
+              "roadAddress": data.roadAddress   // 예: 경기 성남시 분당구 판교역로 166
             };
 
-            // iOS 또는 Android에 데이터를 전달
-            sendPostData(postData);
+            // iOS 및 Android 브릿지 호출 (별도의 함수 없이 직접 조건문으로 처리)
+            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.callBackHandler) {
+              window.webkit.messageHandlers.callBackHandler.postMessage(newPostData);
+            } else if (window.AndroidBridge && typeof window.AndroidBridge.callBackHandler === 'function') {
+              window.AndroidBridge.callBackHandler(JSON.stringify(newPostData));
+            } else {
+              console.warn("지원하는 브릿지가 없습니다.", newPostData);
+            }
           },
           width: "100%",
-          height: "100%",
+          height: "100%"
         }).embed(document.getElementById("layer"));
+
         document.getElementById("layer").style.display = "block";
         initLayerPosition();
       }
 
-      // 레이어 초기 위치 설정 함수
       function initLayerPosition() {
         var width = window.innerWidth || document.documentElement.clientWidth;
         var height = window.innerHeight || document.documentElement.clientHeight;
         var element_layer = document.getElementById("layer");
         element_layer.style.width = width + "px";
         element_layer.style.height = height + "px";
-        element_layer.style.left = ((width - width) / 2) + "px";  // 이 부분은 필요에 따라 조정 가능
-        element_layer.style.top = ((height - height) / 2) + "px";  // 이 부분도 필요에 따라 조정
+        element_layer.style.left = "0px";  // 필요에 따라 조정
+        element_layer.style.top = "0px";   // 필요에 따라 조정
       }
     </script>
   </body>
