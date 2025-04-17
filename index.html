@@ -16,8 +16,9 @@
     <script src="https://spi.maps.daum.net/imap/map_js_init/postcode.v2.js"></script>
     <script>
       function execDaumPostcode() {
-        autoMappingRoad: false,
-        new daum.Postcode({
+        new daum.Postcode(
+          autoMappingRoad: false,
+          {
           oncomplete: function (data) {
             // 반환 결과에서 필요한 값을 추출하여 새 객체 생성
             var newPostData = {
